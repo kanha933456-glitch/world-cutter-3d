@@ -450,7 +450,7 @@ gltfLoader.load(
 
     playerModel =
       gltf.scene;
-
+    playerModel.rotation.y = Math.PI;
     // --------------------------------------------------
     // ENABLE SHADOWS
     // --------------------------------------------------
@@ -508,7 +508,7 @@ gltfLoader.load(
     // TARGET PLAYER HEIGHT
     // --------------------------------------------------
 
-    const targetHeight = 3.2;
+  const targetHeight = 2.2;
 
     if (
       originalSize.y > 0
