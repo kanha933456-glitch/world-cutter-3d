@@ -1,5 +1,5 @@
 import * as THREE from "three";
-
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 const canvas = document.getElementById("game");
 const loading = document.getElementById("loading");
 
