@@ -1,8 +1,11 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
 const gltfLoader = new GLTFLoader();
+
 const canvas = document.getElementById("game");
 const loading = document.getElementById("loading");
+
 // ======================================================
 // SCENE
 // ======================================================
@@ -28,11 +31,7 @@ const camera = new THREE.PerspectiveCamera(
   250
 );
 
-camera.position.set(
-  0,
-  8,
-  13
-);
+camera.position.set(0, 8, 13);
 
 // ======================================================
 // RENDERER
@@ -178,7 +177,6 @@ const grass =
   );
 
 grass.position.y = 0.55;
-
 grass.receiveShadow = true;
 
 island.add(grass);
@@ -193,7 +191,6 @@ function createIslandRock(
   z,
   scale
 ) {
-
   const geometry =
     new THREE.DodecahedronGeometry(
       scale,
@@ -223,33 +220,10 @@ function createIslandRock(
   island.add(rock);
 }
 
-createIslandRock(
-  -5,
-  -3.0,
-  2,
-  1.2
-);
-
-createIslandRock(
-  4,
-  -3.4,
-  -1,
-  1.4
-);
-
-createIslandRock(
-  -1,
-  -3.5,
-  -4,
-  1.0
-);
-
-createIslandRock(
-  6,
-  -2.8,
-  3,
-  0.9
-);
+createIslandRock(-5, -3.0, 2, 1.2);
+createIslandRock(4, -3.4, -1, 1.4);
+createIslandRock(-1, -3.5, -4, 1.0);
+createIslandRock(6, -2.8, 3, 0.9);
 
 // ======================================================
 // TREE SYSTEM
@@ -260,7 +234,6 @@ function createTree(
   z,
   scale = 1
 ) {
-
   const tree =
     new THREE.Group();
 
@@ -331,7 +304,6 @@ function createRock(
   z,
   scale = 1
 ) {
-
   const geometry =
     new THREE.DodecahedronGeometry(
       0.65 * scale,
@@ -375,237 +347,87 @@ const player =
 
 scene.add(player);
 
-// Body
-
-const bodyGeometry =
-  new THREE.CapsuleGeometry(
-    0.48,
-    0.85,
-    8,
-    16
-  );
-
-const bodyMaterial =
-  new THREE.MeshStandardMaterial({
-    color: 0x1769aa,
-    roughness: 0.65
-  });
-
-const body =
-  new THREE.Mesh(
-    bodyGeometry,
-    bodyMaterial
-  );
-
-body.position.y = 1.05;
-body.castShadow = true;
-
-player.add(body);
-
-// Head
-
-const headGeometry =
-  new THREE.SphereGeometry(
-    0.43,
-    20,
-    16
-  );
-
-const skinMaterial =
-  new THREE.MeshStandardMaterial({
-    color: 0xffc49d,
-    roughness: 0.8
-  });
-
-const head =
-  new THREE.Mesh(
-    headGeometry,
-    skinMaterial
-  );
-
-head.position.y = 1.95;
-head.castShadow = true;
-
-player.add(head);
-
-// Hair
-
-const hairGeometry =
-  new THREE.SphereGeometry(
-    0.45,
-    16,
-    10
-  );
-
-const hairMaterial =
-  new THREE.MeshStandardMaterial({
-    color: 0x20252b,
-    roughness: 0.8
-  });
-
-const hair =
-  new THREE.Mesh(
-    hairGeometry,
-    hairMaterial
-  );
-
-hair.scale.set(
-  1,
-  0.55,
-  1
-);
-
-hair.position.set(
-  0,
-  2.22,
-  -0.02
-);
-
-hair.castShadow = true;
-
-player.add(hair);
-
-// Cap
-
-const capGeometry =
-  new THREE.CylinderGeometry(
-    0.47,
-    0.47,
-    0.16,
-    20
-  );
-
-const capMaterial =
-  new THREE.MeshStandardMaterial({
-    color: 0x173d7a,
-    roughness: 0.6
-  });
-
-const cap =
-  new THREE.Mesh(
-    capGeometry,
-    capMaterial
-  );
-
-cap.position.y = 2.35;
-cap.rotation.x = 0.05;
-
-cap.castShadow = true;
-
-player.add(cap);
-
-// Cap visor
-
-const visorGeometry =
-  new THREE.BoxGeometry(
-    0.42,
-    0.06,
-    0.28
-  );
-
-const visor =
-  new THREE.Mesh(
-    visorGeometry,
-    capMaterial
-  );
-
-visor.position.set(
-  0,
-  2.29,
-  0.42
-);
-
-visor.castShadow = true;
-
-player.add(visor);
-
-// Arms
-
-function createArm(side) {
-
-  const armGeometry =
-    new THREE.CapsuleGeometry(
-      0.16,
-      0.65,
-      6,
-      10
-    );
-
-  const arm =
-    new THREE.Mesh(
-      armGeometry,
-      bodyMaterial
-    );
-
-  arm.position.set(
-    side * 0.62,
-    1.08,
-    0
-  );
-
-  arm.rotation.z =
-    side * -0.15;
-
-  arm.castShadow = true;
-
-  player.add(arm);
-
-  return arm;
-}
-
-const leftArm =
-  createArm(-1);
-
-const rightArm =
-  createArm(1);
-
-// Legs
-
-function createLeg(side) {
-
-  const legGeometry =
-    new THREE.CapsuleGeometry(
-      0.17,
-      0.7,
-      6,
-      10
-    );
-
-  const legMaterial =
-    new THREE.MeshStandardMaterial({
-      color: 0x202c3d,
-      roughness: 0.8
-    });
-
-  const leg =
-    new THREE.Mesh(
-      legGeometry,
-      legMaterial
-    );
-
-  leg.position.set(
-    side * 0.25,
-    0.32,
-    0
-  );
-
-  leg.castShadow = true;
-
-  player.add(leg);
-
-  return leg;
-}
-
-const leftLeg =
-  createLeg(-1);
-
-const rightLeg =
-  createLeg(1);
-
 player.position.set(
   0,
   0.7,
   0
+);
+
+// ======================================================
+// GLB PLAYER MODEL
+// ======================================================
+
+let playerModel = null;
+let playerMixer = null;
+
+gltfLoader.load(
+  "/assets/characters/character-male-a.glb",
+
+  (gltf) => {
+
+    playerModel = gltf.scene;
+
+    // Model size
+    playerModel.scale.setScalar(1.5);
+
+    // Model position inside player group
+    playerModel.position.set(
+      0,
+      0,
+      0
+    );
+
+    // Shadows
+    playerModel.traverse((child) => {
+
+      if (child.isMesh) {
+
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+      }
+
+    });
+
+    player.add(playerModel);
+
+    // Animation support
+    if (gltf.animations.length > 0) {
+
+      playerMixer =
+        new THREE.AnimationMixer(
+          playerModel
+        );
+
+      const firstAnimation =
+        gltf.animations[0];
+
+      const action =
+        playerMixer.clipAction(
+          firstAnimation
+        );
+
+      action.play();
+
+    }
+
+    console.log(
+      "GUIDE player model loaded:",
+      gltf.animations.length,
+      "animations"
+    );
+  },
+
+  undefined,
+
+  (error) => {
+
+    console.error(
+      "Character load failed:",
+      error
+    );
+
+  }
 );
 
 // ======================================================
@@ -679,7 +501,6 @@ function createBackgroundIsland(
   z,
   scale
 ) {
-
   const group =
     new THREE.Group();
 
@@ -767,7 +588,6 @@ function createCloud(
   z,
   scale
 ) {
-
   const cloud =
     new THREE.Group();
 
@@ -964,7 +784,7 @@ function updateCamera() {
 }
 
 // ======================================================
-// SIMPLE IDLE ANIMATION
+// PLAYER ANIMATION
 // ======================================================
 
 let elapsed = 0;
@@ -975,34 +795,23 @@ function animatePlayer(
 
   elapsed += delta;
 
-  const bob =
-    Math.sin(elapsed * 3) *
-    0.025;
+  if (playerMixer) {
+    playerMixer.update(delta);
+  }
 
-  body.position.y =
-    1.05 + bob;
+  // Very subtle whole-player idle movement.
+  // This keeps the model alive even if
+  // the GLB has no animation.
 
-  head.position.y =
-    1.95 + bob;
+  if (!playerMixer) {
 
-  hair.position.y =
-    2.22 + bob;
+    player.position.y =
+      0.7 +
+      Math.sin(elapsed * 3) *
+      0.025;
 
-  cap.position.y =
-    2.35 + bob;
+  }
 
-  visor.position.y =
-    2.29 + bob;
-
-  leftArm.rotation.z =
-    -0.15 +
-    Math.sin(elapsed * 2) *
-    0.015;
-
-  rightArm.rotation.z =
-    0.15 +
-    Math.sin(elapsed * 2) *
-    0.015;
 }
 
 // ======================================================
@@ -1030,6 +839,7 @@ window.addEventListener(
         1.5
       )
     );
+
   }
 );
 
@@ -1057,6 +867,7 @@ function animate() {
     scene,
     camera
   );
+
 }
 
 animate();
