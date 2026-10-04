@@ -450,7 +450,7 @@ gltfLoader.load(
 
     playerModel =
       gltf.scene;
-    playerModel.rotation.y = Math.PI;
+    
     // --------------------------------------------------
     // ENABLE SHADOWS
     // --------------------------------------------------
