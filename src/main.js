@@ -25,13 +25,17 @@ scene.fog = new THREE.Fog(
 // ======================================================
 
 const camera = new THREE.PerspectiveCamera(
-  58,
+  55,
   window.innerWidth / window.innerHeight,
   0.1,
   250
 );
 
-camera.position.set(0, 8, 13);
+camera.position.set(
+  0,
+  5.5,
+  8.5
+);
 
 // ======================================================
 // RENDERER
@@ -44,7 +48,10 @@ const renderer = new THREE.WebGLRenderer({
 });
 
 renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio, 1.5)
+  Math.min(
+    window.devicePixelRatio,
+    1.5
+  )
 );
 
 renderer.setSize(
@@ -53,6 +60,7 @@ renderer.setSize(
 );
 
 renderer.shadowMap.enabled = true;
+
 renderer.shadowMap.type =
   THREE.PCFSoftShadowMap;
 
@@ -134,7 +142,8 @@ const leafMaterial =
 // MAIN FLOATING ISLAND
 // ======================================================
 
-const island = new THREE.Group();
+const island =
+  new THREE.Group();
 
 scene.add(island);
 
@@ -155,6 +164,7 @@ const soil =
   );
 
 soil.position.y = -1.1;
+
 soil.castShadow = true;
 soil.receiveShadow = true;
 
@@ -177,6 +187,7 @@ const grass =
   );
 
 grass.position.y = 0.55;
+
 grass.receiveShadow = true;
 
 island.add(grass);
@@ -191,6 +202,7 @@ function createIslandRock(
   z,
   scale
 ) {
+
   const geometry =
     new THREE.DodecahedronGeometry(
       scale,
@@ -220,10 +232,33 @@ function createIslandRock(
   island.add(rock);
 }
 
-createIslandRock(-5, -3.0, 2, 1.2);
-createIslandRock(4, -3.4, -1, 1.4);
-createIslandRock(-1, -3.5, -4, 1.0);
-createIslandRock(6, -2.8, 3, 0.9);
+createIslandRock(
+  -5,
+  -3.0,
+  2,
+  1.2
+);
+
+createIslandRock(
+  4,
+  -3.4,
+  -1,
+  1.4
+);
+
+createIslandRock(
+  -1,
+  -3.5,
+  -4,
+  1.0
+);
+
+createIslandRock(
+  6,
+  -2.8,
+  3,
+  0.9
+);
 
 // ======================================================
 // TREE SYSTEM
@@ -234,6 +269,7 @@ function createTree(
   z,
   scale = 1
 ) {
+
   const tree =
     new THREE.Group();
 
@@ -289,11 +325,35 @@ function createTree(
   return tree;
 }
 
-createTree(-5.5, -4.2, 1.15);
-createTree(5.5, -3.5, 1.25);
-createTree(-6.2, 3.2, 0.95);
-createTree(6.0, 4.2, 1.1);
-createTree(2.7, -6.2, 0.85);
+createTree(
+  -5.5,
+  -4.2,
+  1.15
+);
+
+createTree(
+  5.5,
+  -3.5,
+  1.25
+);
+
+createTree(
+  -6.2,
+  3.2,
+  0.95
+);
+
+createTree(
+  6.0,
+  4.2,
+  1.1
+);
+
+createTree(
+  2.7,
+  -6.2,
+  0.85
+);
 
 // ======================================================
 // ROCK SYSTEM
@@ -304,6 +364,7 @@ function createRock(
   z,
   scale = 1
 ) {
+
   const geometry =
     new THREE.DodecahedronGeometry(
       0.65 * scale,
@@ -333,10 +394,29 @@ function createRock(
   island.add(rock);
 }
 
-createRock(-3.2, 4.8, 1.0);
-createRock(3.5, 2.5, 0.8);
-createRock(-7.0, -0.2, 0.7);
-createRock(7.0, 0.5, 0.9);
+createRock(
+  -3.2,
+  4.8,
+  1.0
+);
+
+createRock(
+  3.5,
+  2.5,
+  0.8
+);
+
+createRock(
+  -7.0,
+  -0.2,
+  0.7
+);
+
+createRock(
+  7.0,
+  0.5,
+  0.9
+);
 
 // ======================================================
 // PLAYER
@@ -347,9 +427,10 @@ const player =
 
 scene.add(player);
 
+// Grass top surface is around Y = 0.725
 player.position.set(
   0,
-  0.7,
+  0.72,
   0
 );
 
@@ -358,41 +439,141 @@ player.position.set(
 // ======================================================
 
 let playerModel = null;
+
 let playerMixer = null;
 
 gltfLoader.load(
+
   "/assets/characters/character-male-a.glb",
 
   (gltf) => {
 
-    playerModel = gltf.scene;
+    playerModel =
+      gltf.scene;
 
-    // Model size
-    playerModel.scale.setScalar(1.5);
+    // --------------------------------------------------
+    // ENABLE SHADOWS
+    // --------------------------------------------------
 
-    // Model position inside player group
-    playerModel.position.set(
-      0,
-      0,
-      0
-    );
+    playerModel.traverse(
+      (child) => {
 
-    // Shadows
-    playerModel.traverse((child) => {
+        if (child.isMesh) {
 
-      if (child.isMesh) {
+          child.castShadow = true;
 
-        child.castShadow = true;
-        child.receiveShadow = true;
+          child.receiveShadow =
+            true;
+
+          if (child.material) {
+
+            child.material.needsUpdate =
+              true;
+
+          }
+
+        }
 
       }
+    );
 
-    });
+    // --------------------------------------------------
+    // FIRST: RESET MODEL SCALE
+    // --------------------------------------------------
 
-    player.add(playerModel);
+    playerModel.scale.set(
+      1,
+      1,
+      1
+    );
 
-    // Animation support
-    if (gltf.animations.length > 0) {
+    // --------------------------------------------------
+    // CALCULATE ORIGINAL MODEL SIZE
+    // --------------------------------------------------
+
+    const originalBox =
+      new THREE.Box3()
+        .setFromObject(
+          playerModel
+        );
+
+    const originalSize =
+      new THREE.Vector3();
+
+    originalBox.getSize(
+      originalSize
+    );
+
+    // --------------------------------------------------
+    // TARGET PLAYER HEIGHT
+    // --------------------------------------------------
+
+    const targetHeight = 3.2;
+
+    if (
+      originalSize.y > 0
+    ) {
+
+      const scale =
+        targetHeight /
+        originalSize.y;
+
+      playerModel.scale.setScalar(
+        scale
+      );
+
+    }
+
+    // --------------------------------------------------
+    // RECALCULATE BOUNDS
+    // --------------------------------------------------
+
+    const scaledBox =
+      new THREE.Box3()
+        .setFromObject(
+          playerModel
+        );
+
+    const center =
+      new THREE.Vector3();
+
+    scaledBox.getCenter(
+      center
+    );
+
+    // --------------------------------------------------
+    // CENTER MODEL HORIZONTALLY
+    // --------------------------------------------------
+
+    playerModel.position.x =
+      -center.x;
+
+    playerModel.position.z =
+      -center.z;
+
+    // --------------------------------------------------
+    // PUT FEET ON PLAYER ORIGIN
+    // --------------------------------------------------
+
+    playerModel.position.y =
+      -scaledBox.min.y;
+
+    // --------------------------------------------------
+    // ADD MODEL TO PLAYER
+    // --------------------------------------------------
+
+    player.add(
+      playerModel
+    );
+
+    // --------------------------------------------------
+    // ANIMATION SUPPORT
+    // --------------------------------------------------
+
+    if (
+      gltf.animations &&
+      gltf.animations.length > 0
+    ) {
 
       playerMixer =
         new THREE.AnimationMixer(
@@ -409,13 +590,32 @@ gltfLoader.load(
 
       action.play();
 
+      console.log(
+        "Player animation started:",
+        firstAnimation.name
+      );
+
     }
 
     console.log(
-      "GUIDE player model loaded:",
-      gltf.animations.length,
-      "animations"
+      "WORLD CUTTER 3D character loaded"
     );
+
+    console.log(
+      "Original height:",
+      originalSize.y
+    );
+
+    console.log(
+      "Final target height:",
+      targetHeight
+    );
+
+    console.log(
+      "Animations:",
+      gltf.animations.length
+    );
+
   },
 
   undefined,
@@ -458,9 +658,13 @@ const territory =
 territory.position.y =
   0.82;
 
-island.add(territory);
+island.add(
+  territory
+);
 
-// Territory border
+// ======================================================
+// TERRITORY BORDER
+// ======================================================
 
 const borderGeometry =
   new THREE.RingGeometry(
@@ -489,7 +693,9 @@ border.rotation.x =
 border.position.y =
   0.86;
 
-island.add(border);
+island.add(
+  border
+);
 
 // ======================================================
 // BACKGROUND FLOATING ISLANDS
@@ -501,6 +707,7 @@ function createBackgroundIsland(
   z,
   scale
 ) {
+
   const group =
     new THREE.Group();
 
@@ -520,7 +727,9 @@ function createBackgroundIsland(
 
   bottom.castShadow = true;
 
-  group.add(bottom);
+  group.add(
+    bottom
+  );
 
   const topGeometry =
     new THREE.CylinderGeometry(
@@ -539,7 +748,9 @@ function createBackgroundIsland(
   top.position.y =
     0.8 * scale;
 
-  group.add(top);
+  group.add(
+    top
+  );
 
   group.position.set(
     x,
@@ -547,7 +758,9 @@ function createBackgroundIsland(
     z
   );
 
-  scene.add(group);
+  scene.add(
+    group
+  );
 }
 
 createBackgroundIsland(
@@ -588,6 +801,7 @@ function createCloud(
   z,
   scale
 ) {
+
   const cloud =
     new THREE.Group();
 
@@ -605,8 +819,10 @@ function createCloud(
 
     const geometry =
       new THREE.SphereGeometry(
-        (1 + Math.random() * 0.5) *
-          scale,
+        (
+          1 +
+          Math.random() * 0.5
+        ) * scale,
         12,
         8
       );
@@ -621,15 +837,19 @@ function createCloud(
       (i - 1.5) *
         scale *
         1.1,
+
       Math.random() *
         0.5 *
         scale,
+
       Math.sin(i) *
         0.3 *
         scale
     );
 
-    cloud.add(puff);
+    cloud.add(
+      puff
+    );
   }
 
   cloud.position.set(
@@ -638,7 +858,9 @@ function createCloud(
     z
   );
 
-  scene.add(cloud);
+  scene.add(
+    cloud
+  );
 }
 
 createCloud(
@@ -669,24 +891,50 @@ createCloud(
 const hud =
   document.createElement("div");
 
-hud.style.position = "fixed";
-hud.style.left = "0";
-hud.style.top = "0";
-hud.style.width = "100%";
-hud.style.padding = "14px";
-hud.style.display = "flex";
+hud.style.position =
+  "fixed";
+
+hud.style.left =
+  "0";
+
+hud.style.top =
+  "0";
+
+hud.style.width =
+  "100%";
+
+hud.style.padding =
+  "14px";
+
+hud.style.display =
+  "flex";
+
 hud.style.justifyContent =
   "space-between";
-hud.style.alignItems = "center";
-hud.style.pointerEvents = "none";
-hud.style.color = "white";
+
+hud.style.alignItems =
+  "center";
+
+hud.style.pointerEvents =
+  "none";
+
+hud.style.color =
+  "white";
+
 hud.style.fontFamily =
   "Arial, sans-serif";
-hud.style.fontWeight = "bold";
-hud.style.fontSize = "15px";
+
+hud.style.fontWeight =
+  "bold";
+
+hud.style.fontSize =
+  "15px";
+
 hud.style.textShadow =
   "0 2px 4px rgba(0,0,0,.8)";
-hud.style.zIndex = "5";
+
+hud.style.zIndex =
+  "5";
 
 hud.innerHTML = `
   <div>
@@ -705,16 +953,21 @@ hud.innerHTML = `
   </div>
 `;
 
-document.body.appendChild(hud);
+document.body.appendChild(
+  hud
+);
 
 // ======================================================
 // PAUSE BUTTON
 // ======================================================
 
 const pauseButton =
-  document.createElement("button");
+  document.createElement(
+    "button"
+  );
 
-pauseButton.textContent = "Ⅱ";
+pauseButton.textContent =
+  "Ⅱ";
 
 pauseButton.style.position =
   "fixed";
@@ -754,14 +1007,14 @@ document.body.appendChild(
 );
 
 // ======================================================
-// CAMERA
+// CAMERA FOLLOW
 // ======================================================
 
 const cameraOffset =
   new THREE.Vector3(
     0,
-    8.5,
-    12
+    5.5,
+    8.5
   );
 
 function updateCamera() {
@@ -769,16 +1022,18 @@ function updateCamera() {
   const target =
     player.position
       .clone()
-      .add(cameraOffset);
+      .add(
+        cameraOffset
+      );
 
   camera.position.lerp(
     target,
-    0.06
+    0.08
   );
 
   camera.lookAt(
     player.position.x,
-    player.position.y + 0.8,
+    player.position.y + 1.35,
     player.position.z
   );
 }
@@ -796,19 +1051,26 @@ function animatePlayer(
   elapsed += delta;
 
   if (playerMixer) {
-    playerMixer.update(delta);
+
+    playerMixer.update(
+      delta
+    );
+
   }
 
-  // Very subtle whole-player idle movement.
-  // This keeps the model alive even if
-  // the GLB has no animation.
+  // Small idle movement
+  // only when GLB has no animation.
 
-  if (!playerMixer) {
+  if (
+    !playerMixer &&
+    playerModel
+  ) {
 
-    player.position.y =
-      0.7 +
-      Math.sin(elapsed * 3) *
-      0.025;
+    playerModel.position.y +=
+      Math.sin(
+        elapsed * 3
+      ) *
+      0.0008;
 
   }
 
@@ -859,7 +1121,9 @@ function animate() {
   const delta =
     clock.getDelta();
 
-  animatePlayer(delta);
+  animatePlayer(
+    delta
+  );
 
   updateCamera();
 
@@ -876,9 +1140,12 @@ animate();
 // LOADING
 // ======================================================
 
-setTimeout(() => {
+setTimeout(
+  () => {
 
-  loading.style.display =
-    "none";
+    loading.style.display =
+      "none";
 
-}, 1000);
+  },
+  1000
+);
