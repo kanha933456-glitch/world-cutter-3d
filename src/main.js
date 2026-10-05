@@ -1,7 +1,5 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-
-const gltfLoader = new GLTFLoader();
+import { createPlayerCharacter } from "./playerCharacter.js";
 
 const canvas = document.getElementById("game");
 const loading = document.getElementById("loading");
@@ -427,7 +425,9 @@ const player =
 
 scene.add(player);
 
-// Grass top surface is around Y = 0.725
+// Grass top surface
+// is around Y = 0.725
+
 player.position.set(
   0,
   0.72,
@@ -435,199 +435,14 @@ player.position.set(
 );
 
 // ======================================================
-// GLB PLAYER MODEL
+// ORIGINAL PLAYER CHARACTER
 // ======================================================
 
-let playerModel = null;
+const playerModel =
+  createPlayerCharacter();
 
-let playerMixer = null;
-
-gltfLoader.load(
-
-  "/assets/characters/character-male-a.glb",
-
-  (gltf) => {
-
-    playerModel =
-      gltf.scene;
-    
-    // --------------------------------------------------
-    // ENABLE SHADOWS
-    // --------------------------------------------------
-
-    playerModel.traverse(
-      (child) => {
-
-        if (child.isMesh) {
-
-          child.castShadow = true;
-
-          child.receiveShadow =
-            true;
-
-          if (child.material) {
-
-            child.material.needsUpdate =
-              true;
-
-          }
-
-        }
-
-      }
-    );
-
-    // --------------------------------------------------
-    // FIRST: RESET MODEL SCALE
-    // --------------------------------------------------
-
-    playerModel.scale.set(
-      1,
-      1,
-      1
-    );
-
-    // --------------------------------------------------
-    // CALCULATE ORIGINAL MODEL SIZE
-    // --------------------------------------------------
-
-    const originalBox =
-      new THREE.Box3()
-        .setFromObject(
-          playerModel
-        );
-
-    const originalSize =
-      new THREE.Vector3();
-
-    originalBox.getSize(
-      originalSize
-    );
-
-    // --------------------------------------------------
-    // TARGET PLAYER HEIGHT
-    // --------------------------------------------------
-
-  const targetHeight = 2.2;
-
-    if (
-      originalSize.y > 0
-    ) {
-
-      const scale =
-        targetHeight /
-        originalSize.y;
-
-      playerModel.scale.setScalar(
-        scale
-      );
-
-    }
-
-    // --------------------------------------------------
-    // RECALCULATE BOUNDS
-    // --------------------------------------------------
-
-    const scaledBox =
-      new THREE.Box3()
-        .setFromObject(
-          playerModel
-        );
-
-    const center =
-      new THREE.Vector3();
-
-    scaledBox.getCenter(
-      center
-    );
-
-    // --------------------------------------------------
-    // CENTER MODEL HORIZONTALLY
-    // --------------------------------------------------
-
-    playerModel.position.x =
-      -center.x;
-
-    playerModel.position.z =
-      -center.z;
-
-    // --------------------------------------------------
-    // PUT FEET ON PLAYER ORIGIN
-    // --------------------------------------------------
-
-    playerModel.position.y =
-      -scaledBox.min.y;
-
-    // --------------------------------------------------
-    // ADD MODEL TO PLAYER
-    // --------------------------------------------------
-
-    player.add(
-      playerModel
-    );
-
-    // --------------------------------------------------
-    // ANIMATION SUPPORT
-    // --------------------------------------------------
-
-    if (
-      gltf.animations &&
-      gltf.animations.length > 0
-    ) {
-
-      playerMixer =
-        new THREE.AnimationMixer(
-          playerModel
-        );
-
-      const firstAnimation =
-        gltf.animations[0];
-
-      const action =
-        playerMixer.clipAction(
-          firstAnimation
-        );
-
-      action.play();
-
-      console.log(
-        "Player animation started:",
-        firstAnimation.name
-      );
-
-    }
-
-    console.log(
-      "WORLD CUTTER 3D character loaded"
-    );
-
-    console.log(
-      "Original height:",
-      originalSize.y
-    );
-
-    console.log(
-      "Final target height:",
-      targetHeight
-    );
-
-    console.log(
-      "Animations:",
-      gltf.animations.length
-    );
-
-  },
-
-  undefined,
-
-  (error) => {
-
-    console.error(
-      "Character load failed:",
-      error
-    );
-
-  }
+player.add(
+  playerModel
 );
 
 // ======================================================
@@ -1039,7 +854,7 @@ function updateCamera() {
 }
 
 // ======================================================
-// PLAYER ANIMATION
+// PLAYER IDLE ANIMATION
 // ======================================================
 
 let elapsed = 0;
@@ -1050,30 +865,12 @@ function animatePlayer(
 
   elapsed += delta;
 
-  if (playerMixer) {
-
-    playerMixer.update(
-      delta
-    );
-
-  }
-
-  // Small idle movement
-  // only when GLB has no animation.
-
-  if (
-    !playerMixer &&
-    playerModel
-  ) {
-
-    playerModel.position.y +=
-      Math.sin(
-        elapsed * 3
-      ) *
-      0.0008;
-
-  }
-
+  // Subtle idle breathing/bobbing
+  playerModel.position.y =
+    -0.21 +
+    Math.sin(
+      elapsed * 2.5
+    ) * 0.015;
 }
 
 // ======================================================
@@ -1131,7 +928,6 @@ function animate() {
     scene,
     camera
   );
-
 }
 
 animate();
